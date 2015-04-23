@@ -1,4 +1,4 @@
-<div ng-controller="CatalogListController">
+<div ng-controller="catalogListController">
     <form>
         <label>Name</label>
         <input ng-model="newCatalog.name">
@@ -9,7 +9,8 @@
     </form>
     <ul>
         <li ng-repeat="catalog in catalogs">
-          {{catalog.name}}
+            <a href="/catalogs/{{catalog/_id}}">{{catalog.name}}</a>
+
             <p>{{catalog.shortdesc}}</p>
             <button ng-click="remove(catalog)">Remove</button>
         </li>

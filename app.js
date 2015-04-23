@@ -1,9 +1,9 @@
 Catalogs = new Mongo.Collection("catalogs");
 
 if (Meteor.isClient) {
-    angular.module('wittwitt', ['angular-meteor']);
+    angular.module('wittwitt', ['angular-meteor', 'ui.router']);
 
-    angular.module("wittwitt").controller("CatalogListController", ['$scope', '$meteor',
+    angular.module("wittwitt").controller("catalogListController", ['$scope', '$meteor',
         function ($scope, $meteor) {
 
             $scope.catalogs = $meteor.collection(Catalogs);
@@ -20,6 +20,31 @@ if (Meteor.isClient) {
             $scope.removeAll = function() {
                 $scope.catalogs.remove();
             };
+        }]);
+
+    angular.module('wittwitt').controller('catalogDetailController', ['$scope', '$stateParams',
+        function($scope, $stateParams) {
+            $scope.catalogId = $stateParams.id;
+        }]);
+
+    angular.module("wittwitt").config(['$urlRouterProvider', '$stateProvider', '$locationProvider',
+        function($urlRouterProvider, $stateProvider, $locationProvider){
+
+            $locationProvider.html5Mode(true);
+
+            $stateProvider
+                .state('catalogList', {
+                    url: '/catalogs',
+                    templateUrl: 'catalogList.ng.html',
+                    controller: 'catalogListController'
+                })
+                .state('catalogDetail', {
+                    url: '/catalogs/:id',
+                    templateUrl: 'catalogDetail.ng.html',
+                    controller: 'catalogDetailController'
+                });
+
+            $urlRouterProvider.otherwise("/catalogs");
         }]);
 }
 
