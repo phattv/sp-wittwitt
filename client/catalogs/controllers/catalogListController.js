@@ -5,6 +5,7 @@
             $scope.catalogs = $meteor.collection(Catalogs);
 
             $scope.add = function () {
+                $scope.newCatalog.owner = $scope.$root.currentUser._id;
                 $scope.catalogs.push($scope.newCatalog);
                 $scope.newCatalog = '';
             };

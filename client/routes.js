@@ -13,9 +13,26 @@
                 .state('catalogDetail', {
                     url: '/catalogs/:id',
                     templateUrl: 'client/catalogs/views/catalogDetail.ng.html',
-                    controller: 'catalogDetailController'
+                    controller: 'catalogDetailController',
+                    resolve: {
+
+                        // If a user is not logged in to the system, it won't be able to access
+                        "currentUser": ['$meteor', function ($meteor) {
+                            return $meteor.requireUser(); // http://angularjs.meteor.com/api/auth
+                        }]
+                    }
                 });
 
             $urlRouterProvider.otherwise("/catalogs");
+        }]);
+
+    angular.module('wittwitt').run(['$rootScope', '$state',
+        function ($rootScope, $state) {
+            $rootScope.$on("$stateChangeError", function (event, toState, toParams, fromState, fromParams, error) {
+                // Catch the error thrown when the $requireUser promise is rejected
+                if (error === "AUTH_REQUIRED") {
+                    $state.go('catalogList');
+                }
+            });
         }]);
 })();
