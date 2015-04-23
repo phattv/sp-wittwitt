@@ -1,8 +1,17 @@
 <div ng-controller="CatalogListController">
+    <form>
+        <label>Name</label>
+        <input ng-model="newCatalog.name">
+        <label>Short Description</label>
+        <input ng-model="newCatalog.shortdesc">
+        <button ng-click="add()">Add</button>
+        <button ng-click="removeAll()">Remove All</button>
+    </form>
     <ul>
         <li ng-repeat="catalog in catalogs">
           {{catalog.name}}
             <p>{{catalog.shortdesc}}</p>
+            <button ng-click="remove(catalog)">Remove</button>
         </li>
     </ul>
 </div>

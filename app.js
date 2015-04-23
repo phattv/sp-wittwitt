@@ -6,21 +6,20 @@ if (Meteor.isClient) {
     angular.module("wittwitt").controller("CatalogListController", ['$scope', '$meteor',
         function ($scope, $meteor) {
 
-            // Call server function and set to Catalogs collection
-            Meteor.call('getDataFromApi', function (error, data) {
-                if (error) {
-                    $scope.errorMessage = error.message;
-                    console.log(error);
-                } else {
-                    for (var i = 0; i < data.length; i++) {
-                        Catalogs.insert(data[i]);
-                    }
-                    console.log(data);
-                }
-            });
+            $scope.catalogs = $meteor.collection(Catalogs);
 
-            $scope.catalogs = $meteor.collection(Catalogs)
+            $scope.add = function() {
+                $scope.catalogs.push($scope.newCatalog);
+                $scope.newCatalog = '';
+            };
 
+            $scope.remove = function(catalog) {
+                $scope.catalogs.remove(catalog);
+            };
+
+            $scope.removeAll = function() {
+                $scope.catalogs.remove();
+            };
         }]);
 }
 
@@ -30,8 +29,6 @@ if (Meteor.isServer) {
 
         // Get data from API
         getDataFromApi: function () {
-            Catalogs.remove({});
-
             var api = 'http://watchaa.com/fandf/index.php/catalogapi/';
             var result = HTTP.get(api);
             if (result.statusCode === 200) {
@@ -39,14 +36,15 @@ if (Meteor.isServer) {
             } else {
                 return JSON.parse(result.content);
             }
-        }
-    });
+        },
 
-    Meteor.startup(function () {
+        // Empty Catalog collection
+        emptyCatalog: function () {
+            Catalogs.remove({});
+        },
 
-        // Insert sample Catalog if empty
-        if (Catalogs.find().count() === 0) {
-
+        // Add sample data
+        addSampleCatalog: function () {
             var sampleCatalog = {
                 arbo: "food/candies/sample",
                 currency: "VND",
@@ -58,6 +56,24 @@ if (Meteor.isServer) {
             };
 
             Catalogs.insert(sampleCatalog);
+        }
+    });
+
+    Meteor.startup(function () {
+
+        // Set Catalogs collection if is empty
+        if (Catalogs.find().count() === 0) {
+            Meteor.call('getDataFromApi', function (error, data) {
+                if (error) {
+                    $scope.errorMessage = error.message;
+                    console.log(error);
+                } else {
+                    for (var i = 0; i < data.length; i++) {
+                        Catalogs.insert(data[i]);
+                    }
+                    console.log(data);
+                }
+            });
         }
     })
 }
